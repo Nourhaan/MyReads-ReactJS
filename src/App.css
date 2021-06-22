@@ -28,7 +28,11 @@ body, .app {
   padding: 0 0 80px;
   flex: 1;
 }
-
+ul.no-bullets {
+  list-style-type: none; /* Remove bullets */
+  padding: 0; 
+  margin: 0; 
+}
 .bookshelf {
   padding: 0 10px 20px;
 }

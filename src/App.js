@@ -11,42 +11,74 @@ class BooksApp extends React.Component {
     super(props);
     this.state = {
       books: [],
-      search_click:false
+      search_books: [],
     };
     // From:Stackoverflow to solve this is undefined issue in each method
-    this.changeShelf = this.changeShelf.bind(this) 
+    this.changeShelf = this.changeShelf.bind(this)
     this.search = this.search.bind(this)
-
+    this.clearSearchList = this.clearSearchList.bind(this)
   }
 
-  getAllBooks() {
-    BooksAPI.getAll()
-      .then((books) => {
-        this.setState(() => ({
-          books: books
-        }));
-        // console.log("componentDidMount",this.state.books);
-      })
-  }
+  async getAllBooks() {
+    const books = await BooksAPI.getAll();
+    this.setState({ books: books, search_books: [] });
 
+  }
   componentDidMount() {
     this.getAllBooks()
   }
 
-  search(query) {
+  async search(query) {
     //check query value if it is empty, set state of search books to empty array 
-    query?
-    BooksAPI.search(query)
-      .then((books) => {
+    if (query) {
+
+      let search_books = await BooksAPI.search(query);
+      console.log("search_books", search_books.length)
+      if (search_books.length) {
+        const read_books_Id = this.state.books.map((book) => {
+          return book.id
+        });
+        if (read_books_Id.length > 0) {
+          search_books = await search_books.map((book) => {
+            if (!book.imageLinks) {
+              book['imageLinks'] = {}
+            }
+            if (read_books_Id.find((id) => id === book.id)) {
+              book['shelf'] = this.state.books.filter(b => b.id === book.id)[0].shelf;
+              return book;
+            }
+            else {
+              book['shelf'] = 'none';
+              return book;
+            }
+          }
+          )
+        }
+        console.log("search books\n", search_books)
+        console.log("\n\nMain books\n", this.state.books)
+
+
         this.setState(() => ({
-          books: books,
-          search_click:true
+          search_books: search_books,
+          books: [],
         }));
-      }):
+      }
+      else {
+        this.setState(() => ({
+          search_books: []
+        }));
+      }
+    }
+    else {
+
+      // :
       this.setState(() => ({
-        books: []
+        search_books: []
       }));
+    }
+    console.log("\n\nMain books after clearing\n", this.state.books)
   }
+
 
   changeShelf(book, shelf) {
     //this is undefined, so I can't use set state here ! why ?
@@ -57,14 +89,19 @@ class BooksApp extends React.Component {
     });
 
   }
+  clearSearchList() {
+    this.setState({ search_books: [] })
+  }
 
   render() {
     // Note 
-    //this.getAllBooks(); // infinite loop - this one is used to update categories immediety but it is not the best practice -
+    //this.getAllBooks(); 
+    // infinite loop - this one is used to update categories immediety but it is not the best practice 
     return (
       <div className="app">
         <Route path='/search' render={() => (
-          <Search search_click={this.state.search_click} books={this.state.books} search={this.search} shelfStatus={this.changeShelf} />
+          <Search clearSearchList={this.clearSearchList} books={this.state.search_books}
+            search={this.search} shelfStatus={this.changeShelf} />
         )} />
 
         <Route path='/' exact render={({ history }) => (

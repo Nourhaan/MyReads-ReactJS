@@ -1,22 +1,37 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import CurrentlyReading from './CurrentlyReading'
-import Read from './Read'
-import WantToRead from './WantToRead'
+import Shelf from './Shelf'
 
 
 class MyReads extends Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
+    const currentlyReadingBooks = this.props.books.filter(b => b.shelf === "currentlyReading");
+    const readBooks = this.props.books.filter(b => b.shelf === "read");
+    const wantToReadBooks = this.props.books.filter(b => b.shelf === "wantToRead");
+    const shelfs = [
+      { id: 1, name: "Currently Reading", books: currentlyReadingBooks },
+      { id: 2, name: "Read", books: readBooks },
+      { id: 3, name: "Want To Read", books: wantToReadBooks },
+    ];
     return (
       <div className="list-books">
         <div className="list-books-title">
           <h1>MyReads</h1>
         </div>
-        <CurrentlyReading books={this.props.books} shelfStatus={this.props.shelfStatus} />
+        {/* <Shelf books={currentlyReadingBooks} shelf="Currently Reading" shelfStatus={this.props.shelfStatus} /> */}
         <div className="list-books-content">
           <div>
-            <Read books={this.props.books} shelfStatus={this.props.shelfStatus} />
-            <WantToRead books={this.props.books} shelfStatus={this.props.shelfStatus} />
+
+            <ul className="no-bullets">
+              {shelfs.map((shelf) => (
+                <li key={shelf.id}>
+                  <Shelf books={shelf.books} shelf={shelf.name} shelfStatus={this.props.shelfStatus} />
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
         <div className="open-search">

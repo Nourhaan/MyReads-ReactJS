@@ -1,10 +1,31 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import debounce from 'lodash.debounce';
+import PropTypes from 'prop-types'
+
 import Book from './Book'
 class Search extends Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.emitChangeDebounced = debounce(this.emitChange, 1000);
+    this.props.clearSearchList();
+  }
+
+  componentWillUnmount() {
+    this.emitChangeDebounced.cancel();
+  }
+
+  handleChange(e) {
+    this.emitChangeDebounced(e.target.value);
+  }
+
+  emitChange(value) {
+    this.props.search(value);
+  }
 
   render() {
-    const { books,shelfStatus, search,search_click } = this.props
+    let { books, shelfStatus } = this.props
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -19,12 +40,13 @@ class Search extends Component {
                   you don't find a specific author or title. Every search is limited by search terms.
                 */}
             <input type="text"
-              onChange={(event) => search(event.target.value)}
+              onChange={this.handleChange}
+              // onChange={(event) => search(event.target.value)}
               placeholder="Search by title or author" />
           </div>
         </div>
-        {search_click ?
-        (
+
+        
         <div className="search-books-results">
           <ol className="books-grid">
             {books.map((book) => (
@@ -34,12 +56,15 @@ class Search extends Component {
             ))}
           </ol>
         </div>
-        ):
-        (<div></div>)
-        }
       </div>
     )
   }
 }
 
+Search.propTypes={
+  books:PropTypes.array.isRequired,
+  shelfStatus:PropTypes.func.isRequired,
+  search:PropTypes.func.isRequired,
+  clearSearchList:PropTypes.func.isRequired
+}
 export default Search
