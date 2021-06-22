@@ -43,6 +43,9 @@ class BooksApp extends React.Component {
             if (!book.imageLinks) {
               book['imageLinks'] = {}
             }
+            if (!book.authors) {
+              book['authors'] = []
+            }
             if (read_books_Id.find((id) => id === book.id)) {
               book['shelf'] = this.state.books.filter(b => b.id === book.id)[0].shelf;
               return book;

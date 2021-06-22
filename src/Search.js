@@ -10,6 +10,10 @@ class Search extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.emitChangeDebounced = debounce(this.emitChange, 1000);
     this.props.clearSearchList();
+    this.state={
+      query:'',
+      firstLuanch:true
+    }
   }
 
   componentWillUnmount() {
@@ -19,9 +23,10 @@ class Search extends Component {
   handleChange(e) {
     this.emitChangeDebounced(e.target.value);
   }
-
+  
   emitChange(value) {
     this.props.search(value);
+    this.setState({firstLuanch:false});
   }
 
   render() {
@@ -47,6 +52,8 @@ class Search extends Component {
         </div>
 
         
+        {books.length || this.state.firstLuanch ?
+        ( 
         <div className="search-books-results">
           <ol className="books-grid">
             {books.map((book) => (
@@ -56,6 +63,9 @@ class Search extends Component {
             ))}
           </ol>
         </div>
+        ):
+        (<div className="no-books"><h5>No Books</h5></div>)
+        } 
       </div>
     )
   }

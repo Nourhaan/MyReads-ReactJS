@@ -4,9 +4,7 @@ import Shelf from './Shelf'
 
 
 class MyReads extends Component {
-  constructor(props) {
-    super(props);
-  }
+  
   render() {
     const currentlyReadingBooks = this.props.books.filter(b => b.shelf === "currentlyReading");
     const readBooks = this.props.books.filter(b => b.shelf === "read");

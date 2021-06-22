@@ -23,6 +23,13 @@ body, .app {
   margin: 0;
   color: white;
 }
+.no-books{
+  display: flex;
+  align-items: center;
+  top: 20%;
+  height: 300px;
+  justify-content: center;
+}
 
 .list-books-content {
   padding: 0 0 80px;
